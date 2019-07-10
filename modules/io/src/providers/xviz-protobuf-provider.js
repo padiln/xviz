@@ -11,10 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+import {XVIZProtobufReader} from '@xviz/io';
+import {XVIZBaseProvider} from './xviz-base-provider';
 
-import './xviz-writer.spec.js';
-// import './xviz-protobuf-writer.spec.js';
-import './xviz-writer-points.spec.js';
-import './xviz-encode-parse.spec.js';
-import './xviz-format-writer.spec.js';
-import './xviz-writer-points.spec.js';
+export class XVIZProtoBufProvider extends XVIZBaseProvider {
+  constructor(params) {
+    super({...params, reader: new XVIZProtobufReader(params.source, params.options)});
+  }
+}

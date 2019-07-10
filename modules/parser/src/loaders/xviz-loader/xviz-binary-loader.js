@@ -13,17 +13,71 @@
 // limitations under the License.
 
 import {GLTFParser} from '@loaders.gl/gltf';
-
+import {loadProtos} from '@xviz/schema';
 import {XVIZ_GLTF_EXTENSION} from '../../constants';
+
+// All XVIZ messages
+const XVIZ_PB = {
+  ENVELOPE: 'xviz.v2.Envelope',
+  START: 'xviz.v2.Start',
+  TRANSFORM_LOG: 'xviz.v2.TransformLog',
+  TRANSFORM_LOG_POINT_IN_TIME: 'xviz.v2.TransformPointInTime',
+  TRANSFORM_LOG_DONE: 'xviz.v2.TransformLogDone',
+  STATE_UPDATE: 'xviz.v2.StateUpdate',
+  RECONFIGURE: 'xviz.v2.Reconfigure',
+  METADATA: 'xviz.v2.Metadata',
+  ERROR: 'xviz.v2.Error'
+};
+
+
+
+const pbTypes = loadProtos();
+const pbEnvelope = pbTypes.lookupType(XVIZ_PB.ENVELOPE);
+const pbMetadata = pbTypes.lookupType(XVIZ_PB.METADATA);
+const pbStateUpdate = pbTypes.lookupType(XVIZ_PB.STATE_UPDATE);
 
 const MAGIC_XVIZ = 0x5856495a; // XVIZ in Big-Endian ASCII
 const MAGIC_GLTF = 0x676c5446; // glTF in Big-Endian ASCII
+const MAGIC_PBE1 = 0x50424531; // PBE1 in Big-Endian ASCII
 const LE = true; // Binary GLTF is little endian.
 const BE = false; // Magic needs to be written as BE
 const GLB_FILE_HEADER_SIZE = 12;
 const GLB_CHUNK_HEADER_SIZE = 8;
 
+export function parsePBE1XVIZ(arrayBuffer) {
+  const strippedBuffer = new Uint8Array(arrayBuffer, 4);
+  const envelope = pbEnvelope.toObject(strippedBuffer, {
+    enum: String
+  });
+
+  const xviz = {
+    type: envelope.type,
+    data: null
+  };
+
+  switch (envelope.type) {
+    case 'xviz/metadata':
+      xviz.data = pbMetadata.toObject(envelope.data.value, {
+        enum: String
+      });
+      break;
+    case 'xviz/state_update':
+      xviz.data = pbStateUpdate.toObject(envelope.data.value, {
+        enum: String
+      });
+      break;
+    default:
+      throw new Error(`Unknown Message type ${envelope.type}`);
+  }
+
+  return xviz;
+}
+
 export function parseBinaryXVIZ(arrayBuffer) {
+  if (isGLB(arrayBuffer, {magic: MAGIC_PBE1})) {
+    return parsePBE1XVIZ(arrayBuffer);
+  }
+
   const gltfParser = new GLTFParser();
   gltfParser.parse(arrayBuffer, {createImages: false});
 
@@ -37,9 +91,19 @@ export function parseBinaryXVIZ(arrayBuffer) {
   return xviz;
 }
 
-export function isBinaryXVIZ(arrayBuffer) {
+export function isGLBXVIZ(arrayBuffer) {
   const isArrayBuffer = arrayBuffer instanceof ArrayBuffer;
   return isArrayBuffer && isGLB(arrayBuffer, {magic: MAGIC_XVIZ});
+}
+
+export function isPBE1XVIZ(arrayBuffer) {
+  const isArrayBuffer = arrayBuffer instanceof ArrayBuffer;
+  return isArrayBuffer && isGLB(arrayBuffer, {magic: MAGIC_PBE1});
+}
+
+export function isBinaryXVIZ(arrayBuffer) {
+  const isArrayBuffer = arrayBuffer instanceof ArrayBuffer;
+  return isArrayBuffer && (isGLB(arrayBuffer, {magic: MAGIC_XVIZ}) || isGLB(arrayBuffer, {magic: MAGIC_PBE1}));
 }
 
 // TODO - Replace with GLBParser.isGLB()
@@ -87,4 +151,13 @@ export function getBinaryXVIZJSONBuffer(arrayBuffer, byteOffset = 0) {
 
   glb.jsonChunkByteOffset = GLB_FILE_HEADER_SIZE + GLB_CHUNK_HEADER_SIZE; // First headers: 20 bytes
   return new Uint8Array(arrayBuffer, byteOffset + glb.jsonChunkByteOffset, glb.jsonChunkLength);
+}
+
+export function getPBEXVIZType(arrayBuffer) {
+  const strippedBuffer = new Uint8Array(arrayBuffer, 4);
+  const envelope = pbEnvelope.toObject(strippedBuffer, {
+    enum: String
+  });
+
+  return envelope.type;
 }

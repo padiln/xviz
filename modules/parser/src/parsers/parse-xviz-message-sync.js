@@ -23,6 +23,8 @@ import {XVIZ_MESSAGE_TYPE} from '../constants';
 import {
   parseBinaryXVIZ,
   isBinaryXVIZ,
+  isPBE1XVIZ,
+  getPBEXVIZType,
   getBinaryXVIZJSONBuffer
 } from '../loaders/xviz-loader/xviz-binary-loader';
 import {parseLogMetadata} from './parse-log-metadata';
@@ -205,6 +207,8 @@ export function getXVIZMessageType(data) {
     case 'binary':
       if (isBinaryXVIZ(data)) {
         return getBinaryXVIZType(data);
+      } else if (isPBE1XVIZ(data)) {
+        return getPBEXVIZType(data);
       }
       if (data instanceof ArrayBuffer) {
         data = new Uint8Array(data);

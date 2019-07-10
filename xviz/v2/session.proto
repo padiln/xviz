@@ -161,7 +161,7 @@ message StreamMetadata {
   repeated StyleClass style_classes = 9;
   CoordinateType coordinate = 10;
   // 4x4 matrix flattened into 16 elements
-  repeated double transform = 11;
+  repeated float transform = 11;
   string transform_callback = 12;
 }
 
@@ -170,9 +170,9 @@ message CameraInfo {
   string human_name = 1;
   string source = 2;
   // (x,y,z) vehicle position as 3 elements
-  repeated double vehicle_position = 3;
+  repeated float vehicle_position = 3;
   // 3x3 matrix, flattened into 9 elements
-  repeated double vehicle_orientation = 4;
+  repeated float vehicle_orientation = 4;
   double pixel_width = 5;
   double pixel_height = 6;
   // 3x3 matrix, flattened into 9 elements

@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 export {XVIZJSONWriter} from './writers/xviz-json-writer';
+export {XVIZProtobufWriter} from './writers/xviz-protobuf-writer';
 export {XVIZBinaryWriter, encodeBinaryXVIZ} from './writers/xviz-binary-writer';
 export {XVIZFormatWriter} from './writers/xviz-format-writer';
 
 export {XVIZJSONReader} from './readers/xviz-json-reader';
+export {XVIZProtobufReader} from './readers/xviz-protobuf-reader';
 export {XVIZBinaryReader} from './readers/xviz-binary-reader';
 
 export {MemorySourceSink} from './io/memory-source-sink';

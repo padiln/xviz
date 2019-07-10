@@ -14,6 +14,8 @@
 export const XVIZ_FORMAT = Object.freeze({
   // Binary GLB enocded in Buffer/ArrayBuffer
   BINARY_GLB: 'BINARY_GLB',
+  // Binary Protobuf enocded in Buffer/ArrayBuffer
+  BINARY_PBE: 'BINARY_PBE',
   // JSON encoded in a Buffer/ArrayBuffer
   JSON_BUFFER: 'JSON_BUFFER',
   // JSON encoded in a String

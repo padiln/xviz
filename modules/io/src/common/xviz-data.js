@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import {parseBinaryXVIZ, isBinaryXVIZ, getXVIZMessageType} from '@xviz/parser';
+import {parseBinaryXVIZ, isGLBXVIZ, isPBE1XVIZ, getXVIZMessageType} from '@xviz/parser';
 import {XVIZMessage} from './xviz-message';
 import {TextDecoder} from './text-encoding';
 import {XVIZ_FORMAT} from './constants';
@@ -150,6 +150,12 @@ export class XVIZData {
         }
         msg = parseBinaryXVIZ(data);
         break;
+      case XVIZ_FORMAT.BINARY_PBE:
+        if (data instanceof Buffer) {
+          data = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
+        }
+        msg = parseBinaryXVIZ(data);
+        break;
       case XVIZ_FORMAT.JSON_BUFFER:
         let jsonString = null;
         if (data instanceof Buffer) {
@@ -188,16 +194,18 @@ export class XVIZData {
           data = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
         }
 
-        if (isBinaryXVIZ(data)) {
+        if (isGLBXVIZ(data)) {
           this._dataFormat = XVIZ_FORMAT.BINARY_GLB;
-        }
+        } else if(isPBE1XVIZ(data)) {
+          this._dataFormat = XVIZ_FORMAT.BINARY_PBE;
+        } else {
+          if (data instanceof ArrayBuffer) {
+            data = new Uint8Array(data);
+          }
 
-        if (data instanceof ArrayBuffer) {
-          data = new Uint8Array(data);
-        }
-
-        if (isJSONString(data)) {
-          this._dataFormat = XVIZ_FORMAT.JSON_BUFFER;
+          if (isJSONString(data)) {
+            this._dataFormat = XVIZ_FORMAT.JSON_BUFFER;
+          }
         }
         break;
       case 'string':

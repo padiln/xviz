@@ -57,7 +57,7 @@ export {default as lidarPointCloudWorker} from './workers/lidar-point-cloud-work
 export {default as streamDataWorker} from './workers/stream-data-worker';
 
 // Loaders
-export {parseBinaryXVIZ, isBinaryXVIZ} from './loaders/xviz-loader/xviz-binary-loader';
+export {parseBinaryXVIZ, isBinaryXVIZ, isPBE1XVIZ, isGLBXVIZ} from './loaders/xviz-loader/xviz-binary-loader';
 
 // Deprecated
 export {parseXVIZMessage as parseStreamMessage} from './parsers/parse-xviz-message';

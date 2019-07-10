@@ -11,10 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+import {XVIZBaseReader} from './xviz-base-reader';
 
-import './xviz-writer.spec.js';
-// import './xviz-protobuf-writer.spec.js';
-import './xviz-writer-points.spec.js';
-import './xviz-encode-parse.spec.js';
-import './xviz-format-writer.spec.js';
-import './xviz-writer-points.spec.js';
+export class XVIZBinaryReader extends XVIZBaseReader {
+  constructor(source, options = {}) {
+    super(source, {...options, suffix: '-frame.pbe'});
+  }
+}
