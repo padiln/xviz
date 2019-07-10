@@ -11,6 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+/* global console */
+/* eslint-disable no-console */
 import {XVIZ_FORMAT, XVIZFormatWriter} from '@xviz/io';
 
 export class WebsocketSink {
@@ -75,6 +77,7 @@ export class XVIZWebsocketSender {
     // Cover the case where we have a format and no writer or when the
     // format does not match.
     if (format && (!this.writer || this.writerFormat !== format)) {
+      console.log(`~~~ format syncing with ${format}`);
       this.writer = new XVIZFormatWriter(this.sink, {format});
       this.writerFormat = format;
     }
@@ -84,6 +87,7 @@ export class XVIZWebsocketSender {
   _sendDataDirect(format, resp) {
     const sourceFormat = resp.format;
 
+    console.log(`~~~ direct: ${format} ${sourceFormat} ${resp.hasMessage()}`);
     // need to check if object() has been called (ie it might be dirty) and repack
     if (format === sourceFormat && !resp.hasMessage()) {
       return true;
@@ -105,6 +109,7 @@ export class XVIZWebsocketSender {
         msg.format === XVIZ_FORMAT.OBJECT ||
         (!msg.hasMessage() && typeof msg.buffer !== 'string' && !msg.buffer.byteLength)
       ) {
+        console.log('~~~ default to GLB');
         return XVIZ_FORMAT.BINARY_GLB;
       }
 
@@ -124,7 +129,7 @@ export class XVIZWebsocketSender {
 
   onMetadata(msg) {
     const format = this._getFormatOptions(msg);
-
+    console.log(`~~~ metadata ${format}`);
     if (this._sendDataDirect(format, msg)) {
       this.sink.writeSync(`1-frame`, msg.buffer);
     } else {
@@ -135,7 +140,7 @@ export class XVIZWebsocketSender {
 
   onStateUpdate(msg) {
     const format = this._getFormatOptions(msg);
-
+    console.log(`~~~ stateUpdate ${format}`);
     if (this._sendDataDirect(format, msg)) {
       this.sink.writeSync('2-frame', msg.buffer);
     } else {

@@ -11,7 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
+/* global console */
+/* eslint-disable no-console */
 import {GLTFParser} from '@loaders.gl/gltf';
 import {loadProtos} from '@xviz/schema';
 import {XVIZ_GLTF_EXTENSION} from '../../constants';
@@ -29,8 +30,6 @@ const XVIZ_PB = {
   ERROR: 'xviz.v2.Error'
 };
 
-
-
 const pbTypes = loadProtos();
 const pbEnvelope = pbTypes.lookupType(XVIZ_PB.ENVELOPE);
 const pbMetadata = pbTypes.lookupType(XVIZ_PB.METADATA);
@@ -46,9 +45,7 @@ const GLB_CHUNK_HEADER_SIZE = 8;
 
 export function parsePBE1XVIZ(arrayBuffer) {
   const strippedBuffer = new Uint8Array(arrayBuffer, 4);
-  const envelope = pbEnvelope.toObject(strippedBuffer, {
-    enum: String
-  });
+  const envelope = pbEnvelope.decode(strippedBuffer);
 
   const xviz = {
     type: envelope.type,
@@ -57,14 +54,10 @@ export function parsePBE1XVIZ(arrayBuffer) {
 
   switch (envelope.type) {
     case 'xviz/metadata':
-      xviz.data = pbMetadata.toObject(envelope.data.value, {
-        enum: String
-      });
+      xviz.data = pbMetadata.decode(envelope.data.value);
       break;
     case 'xviz/state_update':
-      xviz.data = pbStateUpdate.toObject(envelope.data.value, {
-        enum: String
-      });
+      xviz.data = pbStateUpdate.decode(envelope.data.value);
       break;
     default:
       throw new Error(`Unknown Message type ${envelope.type}`);

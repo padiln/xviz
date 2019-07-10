@@ -14,7 +14,7 @@
 import {XVIZProtobufReader} from '@xviz/io';
 import {XVIZBaseProvider} from './xviz-base-provider';
 
-export class XVIZProtoBufProvider extends XVIZBaseProvider {
+export class XVIZProtobufProvider extends XVIZBaseProvider {
   constructor(params) {
     super({...params, reader: new XVIZProtobufReader(params.source, params.options)});
   }

@@ -13,7 +13,7 @@
 // limitations under the License.
 import {XVIZBaseReader} from './xviz-base-reader';
 
-export class XVIZBinaryReader extends XVIZBaseReader {
+export class XVIZProtobufReader extends XVIZBaseReader {
   constructor(source, options = {}) {
     super(source, {...options, suffix: '-frame.pbe'});
   }

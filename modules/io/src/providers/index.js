@@ -11,6 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+/* global console */
+/* eslint-disable no-console */
 import {XVIZJSONProvider} from './xviz-json-provider';
 import {XVIZBinaryProvider} from './xviz-binary-provider';
 import {XVIZProtobufProvider} from './xviz-protobuf-provider';
@@ -29,7 +31,11 @@ async function createXVIZProvider(ProviderClass, args) {
 
 export class XVIZProviderFactoryClass {
   constructor() {
-    this.providerClasses = [{className: XVIZJSONProvider}, {className: XVIZBinaryProvider}, {className: XVIZProtobufProvider}];
+    this.providerClasses = [
+      {className: XVIZJSONProvider},
+      {className: XVIZBinaryProvider},
+      {className: XVIZProtobufProvider}
+    ];
   }
 
   addProviderClass(className, args) {
@@ -46,6 +52,7 @@ export class XVIZProviderFactoryClass {
    */
   async open(args) {
     for (const providerEntry of this.providerClasses) {
+      console.log(`~ Attempting ${providerEntry.constructor.name}`);
       const options = {...args.options, ...providerEntry.args};
       const loader = await createXVIZProvider(providerEntry.className, {...args, options});
 

@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+/* eslint-disable */
 import {XVIZBaseWriter} from './xviz-base-writer';
 import {loadProtos} from '@xviz/schema';
 
@@ -58,6 +59,7 @@ export class XVIZProtobufWriter extends XVIZBaseWriter {
     this._checkValid();
     this._saveTimestamp(xvizMetadata);
 
+    console.log(JSON.stringify(xvizMetadata, null, 2));
     const pbJSON = xvizConvertProtobuf(xvizMetadata);
     let pbType = pbMetadata;
     let pbMsg = pbMetadata.fromObject(pbJSON);
@@ -233,7 +235,7 @@ export function xvizConvertProtobuf(object, keyName) {
   }
 
   if (COLOR_KEYS.includes(keyName)) {
-    if (object.match(/^#([0-9a-f]{3,4})|([0-9a-f]{6,8})$/i)) {
+    if (typeof object === 'string' && object.match(/^#([0-9a-f]{3,4})|([0-9a-f]{6,8})$/i)) {
       return toColorArray(object); 
     }
   }
@@ -248,7 +250,9 @@ export function xvizConvertProtobuf(object, keyName) {
 
     // Handle all other objects
     const newObject = {};
-    for (const key in object) {
+    const objectKeys = Object.keys(object);
+    for (const key of objectKeys) {
+      // console.log(key)
       newObject[key] = xvizConvertProtobuf(object[key], key);
     }
     return newObject;

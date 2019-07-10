@@ -141,7 +141,7 @@ export class XVIZData {
     if (this._message) {
       return this._message;
     }
-
+    console.trace();
     let data = this._data;
     switch (this._dataFormat) {
       case XVIZ_FORMAT.BINARY_GLB:
@@ -155,6 +155,7 @@ export class XVIZData {
           data = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
         }
         msg = parseBinaryXVIZ(data);
+        console.log(JSON.stringify(msg, null, 2));
         break;
       case XVIZ_FORMAT.JSON_BUFFER:
         let jsonString = null;

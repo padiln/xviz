@@ -32,3 +32,4 @@ export {XVIZ_FORMAT, XVIZ_MESSAGE_NAMESPACE} from './common/constants';
 export {XVIZProviderFactory} from './providers/index';
 export {XVIZJSONProvider} from './providers/xviz-json-provider';
 export {XVIZBinaryProvider} from './providers/xviz-binary-provider';
+export {XVIZProtobufProvider} from './providers/xviz-protobuf-provider';
